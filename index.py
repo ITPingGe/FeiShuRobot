@@ -27,12 +27,12 @@ def download_file(url, file_name="movie_img.jpg"):
     return file_name
 
 
-def uploadImage(img_url):
+def upload_image(img_url):
     url = f"{LARK_HOST}{IMG_KEY}"
     form = {'image_type': 'message',
             'image': (open(download_file(img_url), 'rb'))}  # 需要替换具体的path
     multi_form = MultipartEncoder(form)
-    headers = {'Authorization': GetAuthorization(), 'Content-Type': multi_form.content_type}
+    headers = {'Authorization': get_authorization(), 'Content-Type': multi_form.content_type}
     r = requests.request("POST", url, headers=headers, data=multi_form)
     r = json.loads(r.text)
     if r["code"] != 0:
@@ -55,7 +55,7 @@ def poetry_card():
 def movie_card():
     movie_info = get_cikeee()
     return {
-        "movie_img": uploadImage(movie_info[4]),
+        "movie_img": upload_image(movie_info[4]),
         "movie_title": movie_info[8],
         "movie_text": movie_info[7],
         "movie_info": movie_info[6],
@@ -85,10 +85,10 @@ def message_card():
     }
 
 
-def MessageSend(event, context):
+def message_send(event, context):
     """给所有机器人所在的群组发送消息"""
     content = json.dumps(message_card())
-    for chat_id in GetChatID():
+    for chat_id in get_chat_id():
         url = f"{LARK_HOST}{MESSAGE_URI}"
         params = (
             ('receive_id_type', 'chat_id'),
@@ -99,14 +99,14 @@ def MessageSend(event, context):
             "msg_type": "interactive"
         })
         headers = {
-            'Authorization': GetAuthorization(),
+            'Authorization': get_authorization(),
             'Content-Type': 'application/json; charset=utf-8'
         }
         response = requests.post(url=url, headers=headers, data=data, params=params)
         print(response.text)
 
 
-def GetAuthorization():
+def get_authorization():
     """获取tenant_access_token"""
     url = f"{LARK_HOST}{TENANT_ACCESS_TOKEN_URI}"
     payload = json.dumps({
@@ -122,11 +122,11 @@ def GetAuthorization():
     return "Bearer {}".format(tenant_access_token)
 
 
-def GetChatsInfo(page_token):
+def get_chats_info(page_token):
     """获取机器人所在的群"""
     url = f"{LARK_HOST}{CHATS}"
     headers = {
-        'Authorization': GetAuthorization(),
+        'Authorization': get_authorization(),
     }
     params = (
         ('user_id_type', 'open_id'),
@@ -137,18 +137,18 @@ def GetChatsInfo(page_token):
     return json.loads(response.text)["data"]
 
 
-def GetChatID():
+def get_chat_id():
     """获取机器人所在的群的ID"""
     chat_id_list = []
     page_token = ''
-    while len(GetChatsInfo(page_token)["page_token"]) > 0:
-        items = GetChatsInfo(page_token)["items"]
-        page_token = GetChatsInfo(page_token)["page_token"]
+    while len(get_chats_info(page_token)["page_token"]) > 0:
+        items = get_chats_info(page_token)["items"]
+        page_token = get_chats_info(page_token)["page_token"]
         for item in items:
             chat_id = item["chat_id"]
             chat_id_list.append(chat_id)
     else:
-        items = GetChatsInfo(page_token)["items"]
+        items = get_chats_info(page_token)["items"]
         for item in items:
             chat_id = item["chat_id"]
             chat_id_list.append(chat_id)
@@ -156,5 +156,5 @@ def GetChatID():
 
 
 if __name__ == '__main__':
-    MessageSend(event=None, context=None)
+    message_send(event=None, context=None)
     # print(uploadImage("https://www.cikeee.cc/uploads/movimg/521/104d/674190152727624.jpg"))

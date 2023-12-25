@@ -21,6 +21,7 @@ def get_cikeee():
     day = soup.find(attrs={'id': 'day'}).string
     week = soup.find(attrs={'id': 'week'}).string
     day_text = soup.find(attrs={'id': 'daytext'}).text.replace("\xa0", "")
+
     movie_img = soup.find(attrs={'id': 'movie-img'})
     movie_img = CIKEEE_HOST + movie_img.get('src')
     movie_link = soup.find(attrs={'id': 'movie-img-a'})
