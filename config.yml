@@ -1,0 +1,10 @@
+# 此文件仅供调试使用，实际部署时需要在云函数上配置环境变量
+# Robot Info.
+ROBOT_INFO:
+  APP_ID: cli_xxxxxxxxxxxx
+  APP_SECRET: XXXXXXXXXXXXXXXXXXXXXX
+CARD_LIST:
+  POETRY_CARD: ctp_xxxxxxxxxxxx
+  MOVIE_CARD: ctp_xxxxxxxxxxxx
+GAODE_INFO:
+  GAODE_KEY: xxxxxxxxxxxxxxx
